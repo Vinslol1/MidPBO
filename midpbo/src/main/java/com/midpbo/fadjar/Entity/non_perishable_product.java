@@ -1,6 +1,6 @@
 package com.midpbo.fadjar.Entity;
 
-import com.midpbo.fadjar.SuperEntity.product;
+import com.midpbo.fadjar.model.product;
 
 public class non_perishable_product extends product{
     private String expiration_date;

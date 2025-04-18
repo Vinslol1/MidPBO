@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-
 /**
  * JavaFX App
  */
@@ -17,6 +16,10 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+
+        String sqlfile = "../MIDPBO/QUERY.sql";
+        Database_conn.runSQLFile(sqlfile);
+
         scene = new Scene(loadFXML("primary"), 640, 480);
         stage.setScene(scene);
         stage.show();

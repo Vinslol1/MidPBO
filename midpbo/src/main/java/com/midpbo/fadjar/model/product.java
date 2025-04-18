@@ -1,4 +1,4 @@
-package com.midpbo.fadjar.SuperEntity;
+package com.midpbo.fadjar.model;
 
 public class product {
     private String name;

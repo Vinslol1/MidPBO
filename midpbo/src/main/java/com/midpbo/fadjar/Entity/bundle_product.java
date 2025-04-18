@@ -1,7 +1,9 @@
 package com.midpbo.fadjar.Entity;
 
-import com.midpbo.fadjar.SuperEntity.product;
 import java.util.List;
+
+import com.midpbo.fadjar.model.product;
+
 import java.util.ArrayList;
 
 public class bundle_product extends product {

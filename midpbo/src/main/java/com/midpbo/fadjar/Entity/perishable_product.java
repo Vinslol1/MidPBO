@@ -1,7 +1,8 @@
 package com.midpbo.fadjar.Entity;
 
-import com.midpbo.fadjar.SuperEntity.product;
 import java.time.LocalDate;
+
+import com.midpbo.fadjar.model.product;
 
 public class perishable_product extends product{
     private LocalDate expired_date;

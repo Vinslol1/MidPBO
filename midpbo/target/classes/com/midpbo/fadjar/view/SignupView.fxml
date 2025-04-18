@@ -5,45 +5,41 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17" 
+<VBox alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx/17" 
       xmlns:fx="http://javafx.com/fxml/1" 
       fx:controller="com.midpbo.fadjar.controller.AuthController"
-      style="-fx-background-color: #f5f5f5;">
+      stylesheets="@/com/midpbo/fadjar/view/styles/application.css">
     
-    <Label text="POS System - Sign Up" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50;">
-        <font>
-            <Font size="24.0" />
-        </font>
+    <Label text="POS System - Sign Up" styleClass="label-title">
         <padding>
             <Insets top="20" />
         </padding>
     </Label>
     
-    <GridPane hgap="10.0" vgap="15.0" style="-fx-background-color: white; -fx-padding: 20; -fx-background-radius: 5;">
+    <GridPane styleClass="panel" hgap="10" vgap="15">
         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            <Insets bottom="20" left="20" right="20" top="20"/>
         </padding>
         
         <children>
-            <Label text="Full Name:" style="-fx-text-fill: #34495e;" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-            <TextField fx:id="fullName" style="-fx-pref-width: 200;" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            <Label text="Full Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id="fullName" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
             
-            <Label text="Username:" style="-fx-text-fill: #34495e;" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <TextField fx:id="signupUsername" style="-fx-pref-width: 200;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextField fx:id="signupUsername" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             
-            <Label text="Password:" style="-fx-text-fill: #34495e;" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-            <PasswordField fx:id="signupPassword" style="-fx-pref-width: 200;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <PasswordField fx:id="signupPassword" styleClass="password-field" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             
-            <Label text="Confirm Password:" style="-fx-text-fill: #34495e;" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-            <PasswordField fx:id="confirmPassword" style="-fx-pref-width: 200;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label text="Confirm Password:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <PasswordField fx:id="confirmPassword" styleClass="password-field" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             
-            <HBox spacing="10" alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                <Button fx:id="signupButton" text="Sign Up" onAction="#handleSignup" 
-                        style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-weight: bold;" />
+            <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                <Button fx:id="signupButton" text="Sign Up" onAction="#handleSignup" styleClass="button button-success" />
             </HBox>
         </children>
     </GridPane>
     
-    <Label fx:id="messageLabel" />
+    <Label fx:id="messageLabel" styleClass="label-message" />
     <Hyperlink fx:id="gotoLogin" text="Already have an account? Login" />
 </VBox>

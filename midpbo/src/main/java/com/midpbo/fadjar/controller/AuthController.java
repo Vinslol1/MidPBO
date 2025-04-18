@@ -1,12 +1,14 @@
 package com.midpbo.fadjar.controller;
 
 import com.midpbo.fadjar.MainApp;
+import com.midpbo.fadjar.model.User;
+import com.midpbo.fadjar.service.UserService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 public class AuthController {
     // Common elements
-    @FXML protected Label messageLabel;
+    @FXML private Label messageLabel;
     
     // Login elements
     @FXML private TextField loginUsername;
@@ -21,7 +23,7 @@ public class AuthController {
     @FXML private TextField fullName;
     @FXML private Button signupButton;
     @FXML private Hyperlink gotoLogin;
-    
+
     @FXML
     private void initialize() {
         // Login to Signup navigation
@@ -57,9 +59,9 @@ public class AuthController {
             return;
         }
         
-        // In a real app, verify against database
-        if ("admin".equals(username) && "password123".equals(password)) {
-            showSuccess("Login successful!");
+        User user = UserService.authenticate(username, password);
+        if (user != null) {
+            showSuccess("Login successful! Welcome, " + user.getFullName());
             try {
                 MainApp.showPOSView();
             } catch (Exception e) {
@@ -87,26 +89,38 @@ public class AuthController {
             return;
         }
         
-        if (password.length() < 6) {
-            showError("Password must be at least 6 characters");
+        if (!isPasswordStrong(password)) {
+            showError("Password must be at least 8 characters with:\n" +
+                     "- Uppercase & lowercase letters\n" +
+                     "- A number\n" +
+                     "- A special character");
             return;
         }
         
-        // In a real app, save to database
-        showSuccess("Account created successfully!");
-        try {
-            MainApp.showLoginView();
-        } catch (Exception e) {
-            showError("Failed to load login view");
+        if (UserService.registerUser(username, name, password)) {
+            showSuccess("Account created successfully!");
+            try {
+                MainApp.showLoginView();
+            } catch (Exception e) {
+                showError("Failed to load login view");
+            }
+        } else {
+            showError("Username already exists");
         }
     }
     
-    protected void showError(String message) {
+    private boolean isPasswordStrong(String password) {
+        // At least 8 chars, contains digit, lowercase, uppercase, and special char
+        String pattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+        return password.matches(pattern);
+    }
+    
+    private void showError(String message) {
         messageLabel.setText(message);
         messageLabel.setStyle("-fx-text-fill: red;");
     }
     
-    protected void showSuccess(String message) {
+    private void showSuccess(String message) {
         messageLabel.setText(message);
         messageLabel.setStyle("-fx-text-fill: green;");
     }

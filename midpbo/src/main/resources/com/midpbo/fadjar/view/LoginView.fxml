@@ -10,7 +10,7 @@
       fx:controller="com.midpbo.fadjar.controller.AuthController"
       stylesheets="@/com/midpbo/fadjar/view/styles/application.css">
     
-    <Label text="POS System Login" styleClass="label-title">
+    <Label text="POS System - Login" styleClass="label-title">
         <padding>
             <Insets top="20" />
         </padding>

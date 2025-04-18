@@ -7,19 +7,45 @@
     -fx-alignment: center;
 }
 
-/* Text fields and password fields */
-.text-field, .password-field {
-    height: 35px;
-    -fx-pref-height: 35px;
+/* TextField only (longer width) */
+.text-field {
+    /* Standard properties */
+    width: 300px;
+    min-width: 300px;
     border-radius: 4px;
-    -fx-background-radius: 4px;
     border-color: #bdc3c7;
-    -fx-border-color: #bdc3c7;
-    border-radius: 4px;
-    -fx-border-radius: 4px;
     border-width: 1px;
-    -fx-border-width: 1px;
     padding: 5px;
+    
+    /* JavaFX properties */
+    -fx-pref-width: 300px;
+    -fx-min-width: 300px;
+    -fx-pref-height: 35px;
+    -fx-background-radius: 4px;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 4px;
+    -fx-border-width: 1px;
+    -fx-padding: 5px;
+}
+
+/* PasswordField (original size) */
+.password-field {
+    /* Standard properties */
+    width: 250px;
+    min-width: 250px;
+    border-radius: 4px;
+    border-color: #bdc3c7;
+    border-width: 1px;
+    padding: 5px;
+    
+    /* JavaFX properties */
+    -fx-pref-width: 250px;
+    -fx-min-width: 250px;
+    -fx-pref-height: 35px;
+    -fx-background-radius: 4px;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 4px;
+    -fx-border-width: 1px;
     -fx-padding: 5px;
 }
 
@@ -40,44 +66,44 @@
 
 /* Button styles */
 .button {
-    color: white;
-    -fx-text-fill: white;
-    font-weight: bold;
-    -fx-font-weight: bold;
-    padding: 8px 16px;
-    -fx-padding: 8px 16px;
-    border-radius: 4px;
-    -fx-background-radius: 4px;
-}
-
-.button-primary {
+    /* Standard */
     background-color: #3498db;
+    color: white;
+    font-weight: bold;
+    padding: 8px 16px;
+    border-radius: 4px;
+    
+    /* JavaFX */
     -fx-background-color: #3498db;
-}
-
-.button-success {
-    background-color: #2ecc71;
-    -fx-background-color: #2ecc71;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4px;
+    -fx-padding: 8px 16px;
 }
 
 /* Panel styles */
 .panel {
+    /* Standard */
     background-color: white;
-    -fx-background-color: white;
     border-radius: 5px;
-    -fx-background-radius: 5px;
     padding: 20px;
+    
+    /* JavaFX */
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
     -fx-padding: 20px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.1);
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);
 }
 
 /* Title labels */
 .label-title {
+    /* Standard */
     font-size: 24px;
-    -fx-font-size: 24px;
     font-weight: bold;
-    -fx-font-weight: bold;
     color: #2c3e50;
+    
+    /* JavaFX */
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
     -fx-text-fill: #2c3e50;
 }

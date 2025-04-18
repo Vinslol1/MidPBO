@@ -1,0 +1,17 @@
+Steven Girsang:
+(1) public non_perishable_product(String name, String description, double price, int stock, String expiration_date, String storage_condition) {
+        super(name, price, stock);
+        this.expiration_date = expiration_date;
+        this.storage_condition = storage_condition;
+    }
+
+    Super error
+
+(2) List<product>
+
+    Cara insert data banyak ke bundle melalui class bundleProduct
+
+(3) is there a List type in the sqlite later? (i am going to store the bundle data as .db local)
+
+(4) can I delete target and use mvn clean install to create it back?
+    

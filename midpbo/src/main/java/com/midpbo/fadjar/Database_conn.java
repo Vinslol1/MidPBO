@@ -2,7 +2,6 @@ package com.midpbo.fadjar;
 
 import java.sql.Connection;
 import java.sql.Statement;
-import java.io.File;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;

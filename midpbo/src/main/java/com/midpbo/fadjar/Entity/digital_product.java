@@ -1,28 +1,20 @@
-// // package com.midpbo.fadjar.Entity;
+package com.midpbo.fadjar.Entity;
 
-// // import com.midpbo.fadjar.model.product;
+import com.midpbo.fadjar.model.product;
 
-// public class digital_product extends product {
-//     private String licenseKey; // Additional field specific to digital products
+public class digital_product extends product {
+    private String licenseKey;
+    private String format;
 
-//     // Constructor matching parent class
-//     public digital_product(String name, double price, int stock) {
-//         super(name, price, stock); // Properly calls parent constructor
-//         this.licenseKey = ""; // Initialize licenseKey
-//     }
+    public digital_product(String code, String name, double price, String format, String licenseKey) {
+        super(code, name, price, Integer.MAX_VALUE); // Digital products have unlimited stock
+        this.format = format;
+        this.licenseKey = licenseKey;
+    }
 
-//     // Additional constructor with licenseKey
-//     public digital_product(String name, double price, int stock, String licenseKey) {
-//         super(name, price, stock);
-//         this.licenseKey = licenseKey;
-//     }
-
-//     // Getter and setter for licenseKey
-//     public String getLicenseKey() {
-//         return licenseKey;
-//     }
-
-//     public void setLicenseKey(String licenseKey) {
-//         this.licenseKey = licenseKey;
-//     }
-// }
+    // Getters and setters
+    public String getLicenseKey() { return licenseKey; }
+    public void setLicenseKey(String licenseKey) { this.licenseKey = licenseKey; }
+    public String getFormat() { return format; }
+    public void setFormat(String format) { this.format = format; }
+}

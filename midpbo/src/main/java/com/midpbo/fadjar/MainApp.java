@@ -39,16 +39,22 @@ public class MainApp extends Application {
         primaryStage.show();
     }
 
-    public static void showPOSView() throws Exception {
-        FXMLLoader loader = new FXMLLoader(
-            MainApp.class.getResource("/com/midpbo/fadjar/view/POSView.fxml")
-        );
-        Parent root = loader.load();
-        primaryStage.setTitle("POS System - Dashboard");
-        primaryStage.setScene(new Scene(root, 800, 600));
-        primaryStage.setResizable(true);
-        primaryStage.show();
+    public static void showPOSView() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                MainApp.class.getResource("/com/midpbo/fadjar/view/POSView.fxml")
+            );
+            Parent root = loader.load();
+            primaryStage.setTitle("POS System - Dashboard");
+            primaryStage.setScene(new Scene(root, 800, 600));
+            primaryStage.setResizable(true);
+            primaryStage.show();
+        } catch (Exception e) {
+            e.printStackTrace(); // 👈 This will tell you exactly what went wrong
+            System.out.println("ERROR loading POSView: " + e.getMessage());
+        }
     }
+    
 
     public static void main(String[] args) {
         launch(args);

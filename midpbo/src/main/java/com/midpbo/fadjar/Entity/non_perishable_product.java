@@ -2,30 +2,22 @@ package com.midpbo.fadjar.Entity;
 
 import com.midpbo.fadjar.model.product;
 
-public class non_perishable_product extends product{
-    private String expiration_date;
-    private String storage_condition;
+public class non_perishable_product extends product {
+    private String expirationDate;
+    private String storageCondition;
 
-    public non_perishable_product(String name, double price, int stock, String expiration_date, String storage_condition) {
-        super(name, price, stock);
-        this.expiration_date = expiration_date;
-        this.storage_condition = storage_condition;
+    public non_perishable_product(String code, String name, double price, int stock,
+                                String expirationDate, String storageCondition) {
+        super(code, name, price, stock);
+        this.expirationDate = expirationDate;
+        this.storageCondition = storageCondition;
     }
 
-    public String getExpirationDate() {
-        return expiration_date;
+    // Getters and setters
+    public String getExpirationDate() { return expirationDate; }
+    public void setExpirationDate(String expirationDate) { this.expirationDate = expirationDate; }
+    public String getStorageCondition() { return storageCondition; }
+    public void setStorageCondition(String storageCondition) { 
+        this.storageCondition = storageCondition; 
     }
-
-    public void setExpirationDate(String expiration_date) {
-        this.expiration_date = expiration_date;
-    }
-
-    public String getStorageCondition() {
-        return storage_condition;
-    }
-
-    public void setStorageCondition(String storage_condition) {
-        this.storage_condition = storage_condition;
-    }
-    
 }

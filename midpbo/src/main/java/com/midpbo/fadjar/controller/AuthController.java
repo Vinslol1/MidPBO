@@ -1,12 +1,22 @@
 package com.midpbo.fadjar.controller;
 
+import com.midpbo.fadjar.Database_conn;
 import com.midpbo.fadjar.MainApp;
 import com.midpbo.fadjar.model.User;
 import com.midpbo.fadjar.service.UserService;
+import com.midpbo.fadjar.util.SecurityUtils;
+
 import javafx.fxml.FXML;
+import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.*;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class AuthController {
+
     // Common elements
     @FXML private Label messageLabel;
     
@@ -23,6 +33,7 @@ public class AuthController {
     @FXML private TextField fullName;
     @FXML private Button signupButton;
     @FXML private Hyperlink gotoLogin;
+
 
     @FXML
     private void initialize() {
@@ -79,6 +90,7 @@ public class AuthController {
         String confirm = confirmPassword.getText().trim();
         String name = fullName.getText().trim();
         
+        
         if (username.isEmpty() || password.isEmpty() || confirm.isEmpty() || name.isEmpty()) {
             showError("Please fill all fields");
             return;
@@ -91,14 +103,15 @@ public class AuthController {
         
         if (!isPasswordStrong(password)) {
             showError("Password must be at least 8 characters with:\n" +
-                     "- Uppercase & lowercase letters\n" +
-                     "- A number\n" +
-                     "- A special character");
+            "- Uppercase & lowercase letters\n" +
+            "- A number\n" +
+            "- A special character");
             return;
         }
         
         if (UserService.registerUser(username, name, password)) {
-            showSuccess("Account created successfully!");
+                showSuccess("Account created successfully!");
+
             try {
                 MainApp.showLoginView();
             } catch (Exception e) {
@@ -124,4 +137,15 @@ public class AuthController {
         messageLabel.setText(message);
         messageLabel.setStyle("-fx-text-fill: green;");
     }
+
+    // public void closeConnection() {
+    //     try {
+    //         if (conn != null && !conn.isClosed()) {
+    //             conn.close();
+    //             System.out.println("Database connection closed.");
+    //         }
+    //     } catch (SQLException e) {
+    //         System.out.println("Failed to close connection: " + e.getMessage());
+    //     }
+    // }
 }

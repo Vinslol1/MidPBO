@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" spacing="20" xmlns="http://javafx.com/javafx/17" 
+      xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.midpbo.fadjar.controller.AuthController"
+      stylesheets="@/com/midpbo/fadjar/view/styles/application.css">
+    
+    <Label text="POS System - Sign Up" styleClass="label-title">
+        <padding>
+            <Insets top="20" />
+        </padding>
+    </Label>
+    
+    <GridPane styleClass="panel" hgap="10" vgap="15">
+        <padding>
+            <Insets bottom="20" left="20" right="20" top="20"/>
+        </padding>
+        
+        <children>
+            <Label text="Full Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id="fullName" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            
+            <Label text="Username:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <TextField fx:id="signupUsername" styleClass="text-field" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            
+            <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+            <PasswordField fx:id="signupPassword" styleClass="password-field" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            
+            <Label text="Confirm Password:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+            <PasswordField fx:id="confirmPassword" styleClass="password-field" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            
+            <HBox alignment="CENTER_RIGHT" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                <Button fx:id="signupButton" text="Sign Up" onAction="#handleSignup" styleClass="button button-success" />
+            </HBox>
+        </children>
+    </GridPane>
+    
+    <Label fx:id="messageLabel" styleClass="label-message" />
+    <Hyperlink fx:id="gotoLogin" text="Already have an account? Login" />
+</VBox>

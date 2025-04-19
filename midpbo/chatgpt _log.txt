@@ -14,4 +14,10 @@ Steven Girsang:
 (3) is there a List type in the sqlite later? (i am going to store the bundle data as .db local)
 
 (4) can I delete target and use mvn clean install to create it back?
+
+(5) can I connect to database just once so it saves code?
+
+(6) the collon is underlined red (Syntax error on token )
+
+(7) Unreachable catch block for SQLException. This exception is never thrown from the try statement bodyJava(83886247)
     

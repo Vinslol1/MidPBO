@@ -6,11 +6,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 public class MainApp extends Application {
     private static Stage primaryStage;
     
     @Override
     public void start(Stage stage) throws Exception {
+        String sqlFilePath =  "../midpbo/QUERY.sql";
+        Database_conn.runSQLFile(sqlFilePath);
         primaryStage = stage;
         showLoginView();
     }

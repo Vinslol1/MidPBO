@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.midpbo.fadjar.controller.LogTabController" spacing="10">
+    <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
+    
+    <Label text="Log Report" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    
+<HBox spacing="10">
+    <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
+    <DatePicker fx:id="endDatePicker" promptText="End Date"/>
+    <Button text="Generate Log"/>
+</HBox>
+<TableView fx:id="LogTableView" style="-fx-pref-height: 300;">
+    <columns>
+        <TableColumn text="Transactions" fx:id="logTransCol" prefWidth="100"/>
+        <TableColumn text="Revenue" fx:id="logRevenueCol" prefWidth="120"/>
+        <TableColumn text="Date" fx:id="logDateCol" prefWidth="120"/>
+    </columns>
+</TableView>
+</VBox>

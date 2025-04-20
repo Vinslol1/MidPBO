@@ -6,7 +6,6 @@ import com.midpbo.fadjar.DAO.ProductDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import com.midpbo.fadjar.Entity.*;
 import com.midpbo.fadjar.model.*;
 import com.midpbo.fadjar.util.*;
 import com.midpbo.fadjar.Database_conn;
@@ -76,6 +75,8 @@ private void initialize() {
     
     // Initialize product tab with this DAO
     initializeProductTab(productDAO);
+    initializeTransactionTab();
+    initializeLogTab();
 }
 
 private void initializeProductTab(ProductDAO productDAO) {
@@ -107,7 +108,53 @@ private void initializeProductTab(ProductDAO productDAO) {
         alert.showAndWait();
     }
 }
+
+private void initializeTransactionTab() {
+    try {
+        FXMLLoader loader = new FXMLLoader(
+            getClass().getResource("/com/midpbo/fadjar/view/TransactionTab.fxml")
+        );
+        Parent transactionTabContent = loader.load();
+        
+        Tab transactionTab = new Tab("Transaction History", transactionTabContent);
+        transactionTab.setClosable(false); 
+        
+        mainTabPane.getTabs().add(transactionTab);
+        
+    } catch (IOException e) {
+        e.printStackTrace();
+        // Consider showing an error alert to the user
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Failed to load transaction tab");
+        alert.setContentText(e.getMessage());
+        alert.showAndWait();
+    }
+}
     
+private void initializeLogTab() {
+    try {
+        FXMLLoader loader = new FXMLLoader(
+            getClass().getResource("/com/midpbo/fadjar/view/LogTab.fxml")
+        );
+        Parent logTabContent = loader.load();
+        
+        Tab logTab = new Tab("Log Report", logTabContent);
+        logTab.setClosable(false); 
+        
+        mainTabPane.getTabs().add(logTab);
+        
+    } catch (IOException e) {
+        e.printStackTrace();
+        // Consider showing an error alert to the user
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Failed to load Log tab");
+        alert.setContentText(e.getMessage());
+        alert.showAndWait();
+    }
+}
+
     private void generateNewTransaction() {
         String transactionId = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));

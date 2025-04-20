@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class AuthController {
 
@@ -148,4 +149,16 @@ public class AuthController {
     //         System.out.println("Failed to close connection: " + e.getMessage());
     //     }
     // }
+    public void check_data(){
+        try (Connection conn = Database_conn.connect();
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT * FROM products")) {
+
+        while (rs.next()) {
+            System.out.println(rs.getString("code") + " - " + rs.getString("name"));
+        }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

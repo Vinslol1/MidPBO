@@ -1,11 +1,14 @@
 package com.midpbo.fadjar.controller;
 
+import java.sql.*;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import com.midpbo.fadjar.Entity.*;
 import com.midpbo.fadjar.model.*;
 import com.midpbo.fadjar.util.*;
+import com.midpbo.fadjar.Database_conn;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -38,7 +41,18 @@ public class POSController {
     private double subtotal = 0.0;
     private double tax = 0.0;
     private double total = 0.0;
-    
+
+    private Connection conn;
+
+    // Database connection
+    public POSController() {
+        try {
+            conn = Database_conn.connect();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @FXML
     public void initialize() {
         // Initialize quantity spinner
@@ -105,7 +119,7 @@ public class POSController {
         
         // In a real application, you would search your database here
         // This is a mock implementation
-        product product = findProductByCode(productCode);
+        Product product = findProductByCode(productCode);
         
         if (product != null) {
             productCodeLabel.setText(product.getCode());
@@ -127,51 +141,70 @@ public class POSController {
         }
     }
     
-private product findProductByCode(String code) {
-    // Mock implementation - in a real app, query your database
-    if ("P001".equals(code)) {
-        return new perishable_product(
-            "P001",                      // code
-            "Fresh Milk",               // name
-            25000.0,                    // price (as double)
-            50,                         // stock
-            LocalDate.now().plusDays(30), // expired_date
-            "4°C"                       // storage_temperature
-        );
+private Product findProductByCode(String code) {
+
+    String query = "SELECT * FROM products WHERE code = ?";
+    try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+        pstmt.setString(1, code);
+        ResultSet rs = pstmt.executeQuery();
         
-    } else if ("P002".equals(code)) {
-        return new non_perishable_product(
-            "P002",
-            "Canned Beans",   // name
-            18000,            // price
-            100,              // stock
-            "2025-12-31",     // expiration_date
-            "Room Temperature" // storage_condition
-        );
-    } else if ("P003".equals(code)) {
-        return new digital_product(
-            "P003",
-            "E-Book",         // name
-            150000,           // price
-            "PDF",            // format
-            "LIC-12345"       // licenseKey
-        );
-    } else if ("P004".equals(code)) {
-        List<product> products = new ArrayList<>();
-        products.add(new product("P001", "Item 1", 10000, 10));
-        products.add(new product("P002", "Item 2", 15000, 5));
-        
-        return new bundle_product(
-            "P004",               // code
-            "Office Suite",       // name
-            0.0,                  // base price (could be dummy since getPrice is overridden)
-            10,                   // stock
-            products,             // included products
-            15                    // bundle discount
-        );
-        
+        if (rs.next()) {
+            String productCode = rs.getString("code");
+            String name = rs.getString("name");
+            double price = rs.getDouble("price");
+            int stock = rs.getInt("stock");
+            
+            return new Product(productCode,name,price,stock);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
     return null;
+
+    // // Mock implementation - in a real app, query your database
+    // if ("P001".equals(code)) {
+    //     return new perishable_product(
+    //         "P001",                      // code
+    //         "Fresh Milk",               // name
+    //         25000.0,                    // price (as double)
+    //         50,                         // stock
+    //         LocalDate.now().plusDays(30), // expired_date
+    //         "4°C"                       // storage_temperature
+    //     );
+        
+    // } else if ("P002".equals(code)) {
+    //     return new non_perishable_product(
+    //         "P002",
+    //         "Canned Beans",   // name
+    //         18000,            // price
+    //         100,              // stock
+    //         "2025-12-31",     // expiration_date
+    //         "Room Temperature" // storage_condition
+    //     );
+    // } else if ("P003".equals(code)) {
+    //     return new digital_product(
+    //         "P003",
+    //         "E-Book",         // name
+    //         150000,           // price
+    //         "PDF",            // format
+    //         "LIC-12345"       // licenseKey
+    //     );
+    // } else if ("P004".equals(code)) {
+    //     List<product> products = new ArrayList<>();
+    //     products.add(new product("P001", "Item 1", 10000, 10));
+    //     products.add(new product("P002", "Item 2", 15000, 5));
+        
+    //     return new bundle_product(
+    //         "P004",               // code
+    //         "Office Suite",       // name
+    //         0.0,                  // base price (could be dummy since getPrice is overridden)
+    //         10,                   // stock
+    //         products,             // included products
+    //         15                    // bundle discount
+    //     );
+        
+    // }
+    // return null;
 }
     
     private void resetProductDetails() {

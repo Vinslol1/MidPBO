@@ -1,12 +1,12 @@
 package com.midpbo.fadjar.model;
 
-public class product {
+public class Product {
     private String code;  // Add this field
     private String name;
     private double price;  // Changed from int to double
     private int stock;
 
-    public product(String code, String name, double price, int stock) {
+    public Product(String code, String name, double price, int stock) {
         this.code = code;
         this.name = name;
         this.price = price;

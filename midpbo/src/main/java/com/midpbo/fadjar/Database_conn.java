@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class Database_conn {
     private static final String URL =  "jdbc:sqlite:Database.db";
 
-    public static Connection connect(){
+    public static Connection connect() throws SQLException {
         try{
             return DriverManager.getConnection(URL);
         } catch (SQLException e){
@@ -26,16 +26,24 @@ public class Database_conn {
             Statement stmt = conn.createStatement();
             String line;
             StringBuilder sql = new StringBuilder();
-
-            // Membaca file line-by-line dan menggabungkan perintah SQL
+    
             while ((line = br.readLine()) != null) {
                 sql.append(line).append("\n");
             }
-
-            // Menjalankan query SQL
-            stmt.execute(sql.toString());
+    
+            // Pecah berdasarkan tanda ; 
+            String[] queries = sql.toString().split(";");
+    
+            for (String query : queries) {
+                query = query.trim();
+                if (!query.isEmpty()) {
+                    stmt.execute(query);
+                }
+            }
+    
         } catch (IOException | SQLException e) {
             System.out.println("Error running SQL file: " + e.getMessage());
         }
     }
+    
 }

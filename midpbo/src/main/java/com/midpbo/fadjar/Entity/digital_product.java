@@ -1,8 +1,8 @@
 package com.midpbo.fadjar.Entity;
 
-import com.midpbo.fadjar.model.product;
+import com.midpbo.fadjar.model.Product;
 
-public class digital_product extends product {
+public class digital_product extends Product {
     private String licenseKey;
     private String format;
 

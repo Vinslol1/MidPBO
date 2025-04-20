@@ -1,7 +1,8 @@
 package com.midpbo.fadjar.controller;
 
+import java.io.IOException;
 import java.sql.*;
-
+import com.midpbo.fadjar.DAO.ProductDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -9,7 +10,11 @@ import com.midpbo.fadjar.Entity.*;
 import com.midpbo.fadjar.model.*;
 import com.midpbo.fadjar.util.*;
 import com.midpbo.fadjar.Database_conn;
+import com.midpbo.fadjar.MainApp;
+
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import java.time.LocalDate;
@@ -20,6 +25,11 @@ import java.util.List;
 import java.util.UUID;
 
 public class POSController {
+    private ProductDAO productDAO; 
+    
+    public void setProductDAO(ProductDAO productDAO) {
+        this.productDAO = productDAO;
+    }    
     // FXML injected fields
     @FXML private TextField productCodeField;
     @FXML private Label productCodeLabel, productNameLabel, productPriceLabel, productStockLabel;
@@ -36,7 +46,8 @@ public class POSController {
     @FXML private Label changeLabel, statusLabel;
     @FXML private Button processPaymentButton;
     @FXML private ToggleGroup transactionTypeGroup;
-    
+    @FXML private TabPane mainTabPane; // This must match the fx:id in FXML
+
     private ObservableList<CartItem> cartItems = FXCollections.observableArrayList();
     private double subtotal = 0.0;
     private double tax = 0.0;
@@ -53,53 +64,49 @@ public class POSController {
         }
     }
 
-    @FXML
-    public void initialize() {
-        // Initialize quantity spinner
-        quantitySpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1));
-        
-        // Initialize table columns
-        codeColumn.setCellValueFactory(new PropertyValueFactory<>("productCode"));
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("productName"));
-        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
-        quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-        subtotalColumn.setCellValueFactory(new PropertyValueFactory<>("subtotal"));
-        
-        // Add remove button to action column
-        actionColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button removeButton = new Button("Remove");
-            
-            {
-                removeButton.setOnAction(event -> {
-                    CartItem item = getTableView().getItems().get(getIndex());
-                    removeFromCart(item);
-                });
-            }
-            
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(removeButton);
-                }
-            }
-        });
-        
-        // Generate new transaction ID
-        generateNewTransaction();
-        
-        // Enable/disable payment button based on cart content
-        cartItems.addListener((ListChangeListener.Change<? extends CartItem> c) -> {
-            processPaymentButton.setDisable(cartItems.isEmpty());
-        });
+    
+    
+// In POSController.java
+@FXML
+private void initialize() {
+    // Other initialization code...
+    
+    // Get the ProductDAO from MainApp instance
+    ProductDAO productDAO = MainApp.getInstance().getProductDAO();
+    
+    // Initialize product tab with this DAO
+    initializeProductTab(productDAO);
+}
 
-        // Calculate change when amount paid changes
-        amountPaidField.textProperty().addListener((observable, oldValue, newValue) -> {
-            calculateChange();
-        });
+private void initializeProductTab(ProductDAO productDAO) {
+    try {
+        // 1. Load the FXML content
+        FXMLLoader loader = new FXMLLoader(
+            getClass().getResource("/com/midpbo/fadjar/view/ProductTab.fxml")
+        );
+        Parent productTabContent = loader.load();
+        
+        // 2. Get the controller and set the DAO
+        ProductTabController controller = loader.getController();
+        controller.setProductDAO(productDAO);
+        
+        // 3. Create a new Tab and set its content
+        Tab productTab = new Tab("Product Management", productTabContent);
+        productTab.setClosable(false); // Optional: prevent closing
+        
+        // 4. Add the tab to the TabPane (assuming you have @FXML TabPane)
+        mainTabPane.getTabs().add(productTab);
+        
+    } catch (IOException e) {
+        e.printStackTrace();
+        // Consider showing an error alert to the user
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText("Failed to load product tab");
+        alert.setContentText(e.getMessage());
+        alert.showAndWait();
     }
+}
     
     private void generateNewTransaction() {
         String transactionId = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
@@ -141,70 +148,26 @@ public class POSController {
         }
     }
     
-private Product findProductByCode(String code) {
-
-    String query = "SELECT * FROM products WHERE code = ?";
-    try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-        pstmt.setString(1, code);
-        ResultSet rs = pstmt.executeQuery();
-        
-        if (rs.next()) {
-            String productCode = rs.getString("code");
-            String name = rs.getString("name");
-            double price = rs.getDouble("price");
-            int stock = rs.getInt("stock");
+    private Product findProductByCode(String code) {
+        String query = "SELECT * FROM products WHERE code = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+            pstmt.setString(1, code);
+            ResultSet rs = pstmt.executeQuery();
             
-            return new Product(productCode,name,price,stock);
+            if (rs.next()) {
+                int id = rs.getInt("id"); // Get the ID
+                String productCode = rs.getString("code");
+                String name = rs.getString("name");
+                double price = rs.getDouble("price");
+                int stock = rs.getInt("stock");
+                
+                return new Product(id, productCode, name, price, stock);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return null;
+        return null;
 
-    // // Mock implementation - in a real app, query your database
-    // if ("P001".equals(code)) {
-    //     return new perishable_product(
-    //         "P001",                      // code
-    //         "Fresh Milk",               // name
-    //         25000.0,                    // price (as double)
-    //         50,                         // stock
-    //         LocalDate.now().plusDays(30), // expired_date
-    //         "4°C"                       // storage_temperature
-    //     );
-        
-    // } else if ("P002".equals(code)) {
-    //     return new non_perishable_product(
-    //         "P002",
-    //         "Canned Beans",   // name
-    //         18000,            // price
-    //         100,              // stock
-    //         "2025-12-31",     // expiration_date
-    //         "Room Temperature" // storage_condition
-    //     );
-    // } else if ("P003".equals(code)) {
-    //     return new digital_product(
-    //         "P003",
-    //         "E-Book",         // name
-    //         150000,           // price
-    //         "PDF",            // format
-    //         "LIC-12345"       // licenseKey
-    //     );
-    // } else if ("P004".equals(code)) {
-    //     List<product> products = new ArrayList<>();
-    //     products.add(new product("P001", "Item 1", 10000, 10));
-    //     products.add(new product("P002", "Item 2", 15000, 5));
-        
-    //     return new bundle_product(
-    //         "P004",               // code
-    //         "Office Suite",       // name
-    //         0.0,                  // base price (could be dummy since getPrice is overridden)
-    //         10,                   // stock
-    //         products,             // included products
-    //         15                    // bundle discount
-    //     );
-        
-    // }
-    // return null;
 }
     
     private void resetProductDetails() {
@@ -340,5 +303,17 @@ private Product findProductByCode(String code) {
         
         statusLabel.setText("New transaction started");
     }
+private static void setupProductTab(TabPane tabPane, ProductDAO productDAO) throws IOException {
+    FXMLLoader loader = new FXMLLoader(
+        MainApp.class.getResource("/com/midpbo/fadjar/view/ProductView.fxml")
+    );
+    Parent productTabContent = loader.load();
     
+    // Get controller and set DAO
+    ProductTabController controller = loader.getController();
+    controller.setProductDAO(productDAO); // Use the passed DAO
+    
+    Tab productTab = new Tab("Products", productTabContent);
+    tabPane.getTabs().add(productTab);
+}
 }

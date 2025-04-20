@@ -34,6 +34,7 @@ public class AuthController {
     @FXML private TextField fullName;
     @FXML private Button signupButton;
     @FXML private Hyperlink gotoLogin;
+    @FXML private TabPane mainTabPane; // This must match the fx:id in FXML
 
 
     @FXML

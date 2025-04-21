@@ -4,9 +4,6 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
 
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.midpbo.fadjar.controller.TransactionTabController" spacing="10">
     <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
@@ -15,11 +12,10 @@
     
     <TableView fx:id="transactionTable">
         <columns>
-            <TableColumn text="ID" fx:id="idColumn" prefWidth="50"/>
-            <TableColumn text="Code" fx:id="codeColumn" prefWidth="100"/>
-            <TableColumn text="Date" fx:id="DateColumn" prefWidth="150"/>
-            <TableColumn text="Name" fx:id="nameColumn" prefWidth="200"/>
-            <TableColumn text="Total" fx:id="TotalColumn" prefWidth="100"/>
+            <TableColumn text="Transaction ID" fx:id="idColumn" prefWidth="150"/>
+            <TableColumn text="Date" fx:id="dateColumn" prefWidth="150"/>
+            <TableColumn text="Type" fx:id="typeColumn" prefWidth="100"/>
+            <TableColumn text="Total" fx:id="totalColumn" prefWidth="100"/>
         </columns>
     </TableView>
 </VBox>

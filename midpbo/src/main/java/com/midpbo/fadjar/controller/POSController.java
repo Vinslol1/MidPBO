@@ -2,59 +2,53 @@ package com.midpbo.fadjar.controller;
 
 import java.io.IOException;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
 import com.midpbo.fadjar.DAO.ProductDAO;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-import com.midpbo.fadjar.model.*;
-import com.midpbo.fadjar.util.*;
 import com.midpbo.fadjar.Database_conn;
 import com.midpbo.fadjar.MainApp;
+import com.midpbo.fadjar.model.*;
+import com.midpbo.fadjar.util.AlertUtils;
+import com.midpbo.fadjar.util.TransactionStore;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class POSController {
-    private ProductDAO productDAO; 
-    
-    public void setProductDAO(ProductDAO productDAO) {
-        this.productDAO = productDAO;
-    }    
-    // FXML injected fields
+    private ProductDAO productDAO;
+    private Connection conn;
+
+    // UI elements
     @FXML private TextField productCodeField;
     @FXML private Label productCodeLabel, productNameLabel, productPriceLabel, productStockLabel;
     @FXML private Spinner<Integer> quantitySpinner;
     @FXML private Button addToCartButton;
+
     @FXML private TableView<CartItem> cartTableView;
     @FXML private TableColumn<CartItem, String> codeColumn, nameColumn;
     @FXML private TableColumn<CartItem, Double> priceColumn, subtotalColumn;
     @FXML private TableColumn<CartItem, Integer> quantityColumn;
     @FXML private TableColumn<CartItem, Void> actionColumn;
+
     @FXML private Label transactionIdLabel, transactionDateLabel;
     @FXML private Label subtotalLabel, taxLabel, totalLabel;
     @FXML private TextField amountPaidField;
     @FXML private Label changeLabel, statusLabel;
     @FXML private Button processPaymentButton;
     @FXML private ToggleGroup transactionTypeGroup;
-    @FXML private TabPane mainTabPane; // This must match the fx:id in FXML
+    @FXML private TabPane mainTabPane;
 
+    private Product currentProduct;
     private ObservableList<CartItem> cartItems = FXCollections.observableArrayList();
-    private double subtotal = 0.0;
-    private double tax = 0.0;
-    private double total = 0.0;
+    private double subtotal = 0.0, tax = 0.0, total = 0.0;
 
-    private Connection conn;
-
-    // Database connection
     public POSController() {
         try {
             conn = Database_conn.connect();
@@ -63,106 +57,91 @@ public class POSController {
         }
     }
 
-    
-    
-// In POSController.java
-@FXML
-private void initialize() {
-    // Other initialization code...
-    
-    // Get the ProductDAO from MainApp instance
-    ProductDAO productDAO = MainApp.getInstance().getProductDAO();
-    
-    // Initialize product tab with this DAO
-    initializeProductTab(productDAO);
-    initializeTransactionTab();
-    initializeLogTab();
-}
+    @FXML
+    private void initialize() {
+        // Setup spinner
+        quantitySpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1));
 
-private void initializeProductTab(ProductDAO productDAO) {
-    try {
-        // 1. Load the FXML content
-        FXMLLoader loader = new FXMLLoader(
-            getClass().getResource("/com/midpbo/fadjar/view/ProductTab.fxml")
-        );
-        Parent productTabContent = loader.load();
-        
-        // 2. Get the controller and set the DAO
-        ProductTabController controller = loader.getController();
-        controller.setProductDAO(productDAO);
-        
-        // 3. Create a new Tab and set its content
-        Tab productTab = new Tab("Product Management", productTabContent);
-        productTab.setClosable(false); // Optional: prevent closing
-        
-        // 4. Add the tab to the TabPane (assuming you have @FXML TabPane)
-        mainTabPane.getTabs().add(productTab);
-        
-    } catch (IOException e) {
-        e.printStackTrace();
-        // Consider showing an error alert to the user
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText("Failed to load product tab");
-        alert.setContentText(e.getMessage());
-        alert.showAndWait();
-    }
-}
+        // Setup table columns
+        codeColumn.setCellValueFactory(new PropertyValueFactory<>("code"));
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        subtotalColumn.setCellValueFactory(new PropertyValueFactory<>("subtotal"));
 
-private void initializeTransactionTab() {
-    try {
-        FXMLLoader loader = new FXMLLoader(
-            getClass().getResource("/com/midpbo/fadjar/view/TransactionTab.fxml")
-        );
-        Parent transactionTabContent = loader.load();
-        
-        Tab transactionTab = new Tab("Transaction History", transactionTabContent);
-        transactionTab.setClosable(false); 
-        
-        mainTabPane.getTabs().add(transactionTab);
-        
-    } catch (IOException e) {
-        e.printStackTrace();
-        // Consider showing an error alert to the user
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Error");
-        alert.setHeaderText("Failed to load transaction tab");
-        alert.setContentText(e.getMessage());
-        alert.showAndWait();
+        cartTableView.setItems(cartItems);
+
+        // Inject DAO and init tabs
+        productDAO = MainApp.getInstance().getProductDAO();
+        initializeProductTab(productDAO);
+        initializeTransactionTab();
+        initializeLogTab();
+        generateNewTransaction();
+
+        amountPaidField.textProperty().addListener((obs, oldVal, newVal) -> {
+            calculateChange();
+        });        
     }
-}
     
-private void initializeLogTab() {
-    try {
-        FXMLLoader loader = new FXMLLoader(
-            getClass().getResource("/com/midpbo/fadjar/view/LogTab.fxml")
-        );
-        Parent logTabContent = loader.load();
-        
-        Tab logTab = new Tab("Log Report", logTabContent);
-        logTab.setClosable(false); 
-        
-        mainTabPane.getTabs().add(logTab);
-        
-    } catch (IOException e) {
+
+    private void initializeProductTab(ProductDAO productDAO) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/midpbo/fadjar/view/ProductTab.fxml"));
+            Parent productTabContent = loader.load();
+            ProductTabController controller = loader.getController();
+            controller.setProductDAO(productDAO);
+
+            Tab productTab = new Tab("Product Management", productTabContent);
+            productTab.setClosable(false);
+            mainTabPane.getTabs().add(productTab);
+        } catch (IOException e) {
+            showLoadError("Product Tab", e);
+        }
+    }
+
+    private void initializeTransactionTab() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/midpbo/fadjar/view/TransactionTab.fxml"));
+            Parent transactionTabContent = loader.load();
+
+            Tab transactionTab = new Tab("Transaction History", transactionTabContent);
+            transactionTab.setClosable(false);
+            mainTabPane.getTabs().add(transactionTab);
+        } catch (IOException e) {
+            showLoadError("Transaction Tab", e);
+        }
+    }
+
+    private void initializeLogTab() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/midpbo/fadjar/view/LogTab.fxml"));
+            Parent logTabContent = loader.load();
+
+            Tab logTab = new Tab("Log Report", logTabContent);
+            logTab.setClosable(false);
+            mainTabPane.getTabs().add(logTab);
+        } catch (IOException e) {
+            showLoadError("Log Tab", e);
+        }
+    }
+
+    private void showLoadError(String tabName, Exception e) {
         e.printStackTrace();
-        // Consider showing an error alert to the user
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Error");
-        alert.setHeaderText("Failed to load Log tab");
+        alert.setHeaderText("Failed to load " + tabName);
         alert.setContentText(e.getMessage());
         alert.showAndWait();
     }
-}
 
     private void generateNewTransaction() {
         String transactionId = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        
+
         transactionIdLabel.setText(transactionId);
         transactionDateLabel.setText(currentDate);
     }
-    
+
     @FXML
     private void handleSearchProduct() {
         String productCode = productCodeField.getText().trim();
@@ -170,115 +149,113 @@ private void initializeLogTab() {
             AlertUtils.showError("Error", "Please enter a product code");
             return;
         }
-        
-        // In a real application, you would search your database here
-        // This is a mock implementation
+
         Product product = findProductByCode(productCode);
-        
         if (product != null) {
+            currentProduct = product; // ✅ Save the reference here
+        
             productCodeLabel.setText(product.getCode());
             productNameLabel.setText(product.getName());
             productPriceLabel.setText(String.format("%,.2f", product.getPrice()));
             productStockLabel.setText(String.valueOf(product.getStock()));
             addToCartButton.setDisable(false);
-            
-            // Set max value for spinner based on stock
-            quantitySpinner.getValueFactory().setValue(1);
-
-// With this:
-            SpinnerValueFactory.IntegerSpinnerValueFactory valueFactory = 
-            (SpinnerValueFactory.IntegerSpinnerValueFactory) quantitySpinner.getValueFactory();
+        
+            SpinnerValueFactory.IntegerSpinnerValueFactory valueFactory =
+                (SpinnerValueFactory.IntegerSpinnerValueFactory) quantitySpinner.getValueFactory();
             valueFactory.setMax(product.getStock());
+            valueFactory.setValue(1);
         } else {
             AlertUtils.showError("Not Found", "Product not found with code: " + productCode);
             resetProductDetails();
         }
+        
     }
-    
+
     private Product findProductByCode(String code) {
         String query = "SELECT * FROM products WHERE code = ?";
         try (PreparedStatement pstmt = conn.prepareStatement(query)) {
             pstmt.setString(1, code);
             ResultSet rs = pstmt.executeQuery();
-            
             if (rs.next()) {
-                int id = rs.getInt("id"); // Get the ID
-                String productCode = rs.getString("code");
-                String name = rs.getString("name");
-                double price = rs.getDouble("price");
-                int stock = rs.getInt("stock");
-                
-                return new Product(id, productCode, name, price, stock);
+                return new Product(
+                    rs.getInt("id"),
+                    rs.getString("code"),
+                    rs.getString("name"),
+                    rs.getDouble("price"),
+                    rs.getInt("stock")
+                );
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return null;
-
-}
-    
-    private void resetProductDetails() {
-        productCodeLabel.setText("-");
-        productNameLabel.setText("-");
-        productPriceLabel.setText("-");
-        productStockLabel.setText("-");
-        addToCartButton.setDisable(true);
     }
-    
+
+    private void resetProductDetails() {
+        productCodeLabel.setText("");
+        productNameLabel.setText("");
+        productPriceLabel.setText("");
+        productStockLabel.setText("");
+        currentProduct = null; // ✅ clear product reference
+        addToCartButton.setDisable(true);
+    }    
+
     @FXML
     private void handleAddToCart() {
-        String productCode = productCodeLabel.getText();
-        String productName = productNameLabel.getText();
-        double price = Double.parseDouble(productPriceLabel.getText().replace(",", ""));
+        if (currentProduct == null) {
+            AlertUtils.showError("No Product", "Please search and select a product first.");
+            return;
+        }
+    
+        String code = currentProduct.getCode();
+        String name = currentProduct.getName();
+        double price = currentProduct.getPrice(); // ✅ Reliable source
         int quantity = quantitySpinner.getValue();
-        
-        // Check if product already in cart
-        for (CartItem item : cartTableView.getItems()) {
-            if (item.getProductCode().equals(productCode)) {
+    
+        for (CartItem item : cartItems) {
+            if (item.getProductCode().equals(code)) {
                 item.setQuantity(item.getQuantity() + quantity);
                 cartTableView.refresh();
                 updateTotals();
                 return;
             }
         }
-        
-        // Add new item to cart
-        CartItem newItem = new CartItem(productCode, productName, price, quantity);
-        cartTableView.getItems().add(newItem);
+    
+        CartItem newItem = new CartItem(code, name, price, quantity);
+        cartItems.add(newItem);
         updateTotals();
-        
-        // Reset product search
+    
         productCodeField.clear();
         resetProductDetails();
     }
     
-    private void removeFromCart(CartItem item) {
-        cartTableView.getItems().remove(item);
-        updateTotals();
-    }
-    
+
     private void updateTotals() {
-        subtotal = cartTableView.getItems().stream()
-                .mapToDouble(CartItem::getSubtotal)
-                .sum();
-        tax = subtotal * 0.1; // Assuming 10% tax
+        subtotal = cartItems.stream().mapToDouble(CartItem::getSubtotal).sum();
+        tax = subtotal * 0.1;
         total = subtotal + tax;
-        
+
         subtotalLabel.setText(String.format("%,.2f", subtotal));
         taxLabel.setText(String.format("%,.2f", tax));
         totalLabel.setText(String.format("%,.2f", total));
-        
-        // Re-calculate change if amount paid was already entered
         calculateChange();
     }
-    
+
     private void calculateChange() {
         try {
-            double amountPaid = Double.parseDouble(amountPaidField.getText());
+            double amountPaid = Double.parseDouble(amountPaidField.getText().replace(",", ""));
             double change = amountPaid - total;
-            changeLabel.setText(String.format("%,.2f", change));
+    
+            if (change >= 0) {
+                changeLabel.setText(String.format("%,.2f", change));
+                processPaymentButton.setDisable(false); // ✅ Enable when valid
+            } else {
+                changeLabel.setText("0.00");
+                processPaymentButton.setDisable(true); // ❌ Not enough money
+            }
         } catch (NumberFormatException e) {
             changeLabel.setText("0.00");
+            processPaymentButton.setDisable(true); // ❌ Invalid input
         }
     }
     
@@ -290,77 +267,80 @@ private void initializeLogTab() {
                 AlertUtils.showError("Payment Error", "Amount paid is less than total amount");
                 return;
             }
-            
+    
             String transactionType = (String) transactionTypeGroup.getSelectedToggle().getUserData();
-            transaction transaction;
-            
-            if ("PURCHASE".equals(transactionType)) {
-                transaction = new PurchaseTransaction(
-                    transactionIdLabel.getText(),
-                    LocalDateTime.now(),
-                    cartTableView.getItems()
-                );
-            } else {
-                transaction = new RefundTransaction(
-                    transactionIdLabel.getText(),
-                    LocalDateTime.now(),
-                    cartTableView.getItems()
-                );
+            String transactionId = transactionIdLabel.getText();
+            LocalDateTime now = LocalDateTime.now();
+            String formattedDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    
+            // Store in memory (TransactionStore)
+            TransactionStore.add(new TransactionRecord(
+                transactionId,
+                formattedDate,
+                transactionType,
+                total
+            ));
+    
+            // Insert into database
+            String insertTxnSQL = "INSERT INTO transactions (id, date, type, total) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(insertTxnSQL)) {
+                pstmt.setString(1, transactionId);
+                pstmt.setString(2, formattedDate);
+                pstmt.setString(3, transactionType);
+                pstmt.setDouble(4, total);
+                pstmt.executeUpdate();
             }
-            
-            // Process the transaction
+    
+            // Insert each cart item into transaction_items
+            String insertItemSQL = "INSERT INTO transaction_items (transaction_id, product_code, quantity, price_per_unit) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement pstmt = conn.prepareStatement(insertItemSQL)) {
+                for (CartItem item : cartItems) {
+                    pstmt.setString(1, transactionId);
+                    pstmt.setString(2, item.getCode());
+                    pstmt.setInt(3, item.getQuantity());
+                    pstmt.setDouble(4, item.getPrice());
+                    pstmt.addBatch();
+                }
+                pstmt.executeBatch();
+            }
+    
+            // Transaction logic
+            transaction transaction;
+            if ("PURCHASE".equals(transactionType)) {
+                transaction = new PurchaseTransaction(transactionId, now, cartItems);
+            } else {
+                transaction = new RefundTransaction(transactionId, now, cartItems);
+            }
+    
             transaction.processTransaction();
             transaction.serializeTransaction();
-            
-            // Show success message
+    
             AlertUtils.showInfo("Success", "Transaction processed successfully\n" +
                 "Total: " + totalLabel.getText() + "\n" +
                 "Change: " + changeLabel.getText());
-            
-            // Reset for new transaction
+    
             handleNewTransaction();
+    
         } catch (NumberFormatException e) {
             AlertUtils.showError("Error", "Please enter a valid payment amount");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            AlertUtils.showError("Database Error", "Failed to store transaction: " + e.getMessage());
         }
-    }
-    
+    }    
+
     @FXML
     private void handleNewTransaction() {
-        // Clear cart
-        cartTableView.getItems().clear();
-        
-        // Reset totals
-        subtotal = 0.0;
-        tax = 0.0;
-        total = 0.0;
+        cartItems.clear();
+        subtotal = tax = total = 0.0;
         subtotalLabel.setText("0.00");
         taxLabel.setText("0.00");
         totalLabel.setText("0.00");
-        
-        // Clear payment fields
         amountPaidField.clear();
         changeLabel.setText("0.00");
-        
-        // Generate new transaction ID
-        generateNewTransaction();
-        
-        // Reset product search
         productCodeField.clear();
         resetProductDetails();
-        
+        generateNewTransaction();
         statusLabel.setText("New transaction started");
     }
-private static void setupProductTab(TabPane tabPane, ProductDAO productDAO) throws IOException {
-    FXMLLoader loader = new FXMLLoader(
-        MainApp.class.getResource("/com/midpbo/fadjar/view/ProductView.fxml")
-    );
-    Parent productTabContent = loader.load();
-    
-    // Get controller and set DAO
-    ProductTabController controller = loader.getController();
-    controller.setProductDAO(productDAO); // Use the passed DAO
-    
-    Tab productTab = new Tab("Products", productTabContent);
-    tabPane.getTabs().add(productTab);
-}
 }

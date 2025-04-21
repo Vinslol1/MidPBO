@@ -1,0 +1,203 @@
+Folder PATH listing for volume OS
+Volume serial number is 5A26-F9F6
+C:.
+|   midpbo.txt
+|   structure.txt
+|   
++---.idea
+|   |   .gitignore
+|   |   MidPBO.iml
+|   |   misc.xml
+|   |   modules.xml
+|   |   vcs.xml
+|   |   
+|   \---libraries
+|           lib.xml
+|           
++---.vscode
+|       settings.json
+|       
++---main
+|   \---java
+|       \---pos
+|           |   POSApp.java
+|           |   
+|           +---model
+|           |       CartItem.java
+|           |       LogEntry.java
+|           |       Product.java
+|           |       Transaction.java
+|           |       User.java
+|           |       
+|           \---view
+|                   LoginView.java
+|                   LogsView.java
+|                   MainView.java
+|                   ProductManagementView.java
+|                   SalesView.java
+|                   UserManagementView.java
+|                   
++---midpbo
+|   |   chatgpt _log.txt
+|   |   Database.db
+|   |   pom.xml
+|   |   pos.db
+|   |   QUERY.sql
+|   |   
+|   +---src
+|   |   \---main
+|   |       +---java
+|   |       |   \---com
+|   |       |       \---midpbo
+|   |       |           \---fadjar
+|   |       |               |   Database_conn.java
+|   |       |               |   MainApp.java
+|   |       |               |   
+|   |       |               +---controller
+|   |       |               |       AuthController.java
+|   |       |               |       LogTabController.java
+|   |       |               |       MainController.java
+|   |       |               |       POSController.java
+|   |       |               |       ProductTabController.java
+|   |       |               |       TransactionTabController.java
+|   |       |               |       
+|   |       |               +---DAO
+|   |       |               |       ProductDAO.java
+|   |       |               |       
+|   |       |               +---model
+|   |       |               |       BundleProduct.java
+|   |       |               |       CartItem.java
+|   |       |               |       Payable.java
+|   |       |               |       PerishableProduct.java
+|   |       |               |       Product.java
+|   |       |               |       PurchaseTransaction.java
+|   |       |               |       RefundTransaction.java
+|   |       |               |       transaction.java
+|   |       |               |       User.java
+|   |       |               |       
+|   |       |               +---service
+|   |       |               |       UserService.java
+|   |       |               |       
+|   |       |               \---util
+|   |       |                       AlertUtils.java
+|   |       |                       SecurityUtils.java
+|   |       |                       
+|   |       \---resources
+|   |           \---com
+|   |               \---midpbo
+|   |                   \---fadjar
+|   |                       \---view
+|   |                           |   AlternatePOS.fxml
+|   |                           |   LoginView.fxml
+|   |                           |   LogTab.fxml
+|   |                           |   POSView.fxml
+|   |                           |   ProductTab.fxml
+|   |                           |   ProductView.fxml
+|   |                           |   RootLayout.fxml
+|   |                           |   SignupView.fxml
+|   |                           |   TransactionTab.fxml
+|   |                           |   
+|   |                           \---styles
+|   |                                   application.css
+|   |                                   
+|   \---target
+|       +---classes
+|       |   \---com
+|       |       \---midpbo
+|       |           \---fadjar
+|       |               |   Database_conn.class
+|       |               |   MainApp.class
+|       |               |   
+|       |               +---controller
+|       |               |       AuthController.class
+|       |               |       LogTabController.class
+|       |               |       MainController.class
+|       |               |       POSController.class
+|       |               |       ProductTabController.class
+|       |               |       TransactionTabController.class
+|       |               |       
+|       |               +---DAO
+|       |               |       ProductDAO.class
+|       |               |       
+|       |               +---model
+|       |               |       BundleProduct.class
+|       |               |       CartItem.class
+|       |               |       Payable.class
+|       |               |       PerishableProduct.class
+|       |               |       Product.class
+|       |               |       PurchaseTransaction.class
+|       |               |       RefundTransaction.class
+|       |               |       transaction.class
+|       |               |       User.class
+|       |               |       
+|       |               +---service
+|       |               |       UserService.class
+|       |               |       
+|       |               +---util
+|       |               |       AlertUtils.class
+|       |               |       SecurityUtils.class
+|       |               |       
+|       |               \---view
+|       |                   |   AlternatePOS.fxml
+|       |                   |   LoginView.fxml
+|       |                   |   LogTab.fxml
+|       |                   |   POSView.fxml
+|       |                   |   ProductTab.fxml
+|       |                   |   ProductView.fxml
+|       |                   |   RootLayout.fxml
+|       |                   |   SignupView.fxml
+|       |                   |   TransactionTab.fxml
+|       |                   |   
+|       |                   \---styles
+|       |                           application.css
+|       |                           
+|       +---generated-sources
+|       |   \---annotations
+|       \---maven-status
+|           \---maven-compiler-plugin
+|               \---compile
+|                   \---default-compile
+|                           createdFiles.lst
+|                           inputFiles.lst
+|                           
+\---out
+    \---production
+        \---MidPBO
+            +---.idea
+            |   |   .gitignore
+            |   |   MidPBO.iml
+            |   |   misc.xml
+            |   |   modules.xml
+            |   |   vcs.xml
+            |   |   
+            |   \---libraries
+            |           lib.xml
+            |           
+            +---.vscode
+            |       settings.json
+            |       
+            \---main
+                \---java
+                    \---pos
+                        |   POSApp.class
+                        |   
+                        +---model
+                        |       CartItem.class
+                        |       LogEntry.class
+                        |       Product.class
+                        |       Transaction.class
+                        |       User.class
+                        |       
+                        \---view
+                                LoginView.class
+                                LogsView$1.class
+                                LogsView.class
+                                MainView.class
+                                ProductManagementView$1.class
+                                ProductManagementView.class
+                                SalesView$1.class
+                                SalesView$2.class
+                                SalesView$3.class
+                                SalesView.class
+                                UserManagementView.class
+                                

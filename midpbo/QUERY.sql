@@ -32,3 +32,18 @@ CREATE TABLE IF NOT EXISTS bundle_product_items (
     FOREIGN KEY(bundle_id) REFERENCES bundle_products(id),
     FOREIGN KEY(product_id) REFERENCES products(id)
 );
+
+CREATE TABLE IF NOT EXISTS transactions (
+    id TEXT PRIMARY KEY,
+    date TEXT NOT NULL,
+    type TEXT NOT NULL,
+    total REAL NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS transaction_items (
+    transaction_id TEXT,
+    product_code TEXT,
+    quantity INTEGER,
+    price_per_unit REAL,
+    FOREIGN KEY(transaction_id) REFERENCES transactions(id)
+);

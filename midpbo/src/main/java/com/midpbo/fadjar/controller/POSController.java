@@ -77,6 +77,49 @@ private void initialize() {
     initializeProductTab(productDAO);
     initializeTransactionTab();
     initializeLogTab();
+    // Initialize quantity spinner
+    quantitySpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 100, 1));
+    
+        // Initialize table columns
+        codeColumn.setCellValueFactory(new PropertyValueFactory<>("productCode"));
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("productName"));
+        priceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        subtotalColumn.setCellValueFactory(new PropertyValueFactory<>("subtotal"));
+
+                // Add remove button to action column
+                actionColumn.setCellFactory(param -> new TableCell<>() {
+                    private final Button removeButton = new Button("Remove");
+                    
+                    {
+                        removeButton.setOnAction(event -> {
+                            CartItem item = getTableView().getItems().get(getIndex());
+                            removeFromCart(item);
+                        });
+                    }
+                    
+                    @Override
+                    protected void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            setGraphic(removeButton);
+                        }
+                    }
+                });
+                        // Generate new transaction ID
+        generateNewTransaction();
+        
+        // Enable/disable payment button based on cart content
+        cartItems.addListener((ListChangeListener.Change<? extends CartItem> c) -> {
+            processPaymentButton.setDisable(cartItems.isEmpty());
+        });
+
+        // Calculate change when amount paid changes
+        amountPaidField.textProperty().addListener((observable, oldValue, newValue) -> {
+            calculateChange();
+        });
 }
 
 private void initializeProductTab(ProductDAO productDAO) {

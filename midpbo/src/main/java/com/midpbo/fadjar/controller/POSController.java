@@ -14,12 +14,15 @@ import com.midpbo.fadjar.util.AlertUtils;
 import com.midpbo.fadjar.util.TransactionStore;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 
 public class POSController {
     private ProductDAO productDAO;
@@ -45,6 +48,8 @@ public class POSController {
     @FXML private ToggleGroup transactionTypeGroup;
     @FXML private TabPane mainTabPane;
 
+
+    private CartItem editingItem = null;
     private Product currentProduct;
     private ObservableList<CartItem> cartItems = FXCollections.observableArrayList();
     private double subtotal = 0.0, tax = 0.0, total = 0.0;
@@ -71,6 +76,14 @@ public class POSController {
 
         cartTableView.setItems(cartItems);
 
+        setupActionColumn(); // <-- new method to create Edit/Delete buttons
+
+        // Show/hide Action column based on items in the cart
+        actionColumn.setVisible(!cartItems.isEmpty());
+        cartItems.addListener((ListChangeListener<CartItem>) change -> {
+            actionColumn.setVisible(!cartItems.isEmpty());
+        });
+
         // Inject DAO and init tabs
         productDAO = MainApp.getInstance().getProductDAO();
         initializeProductTab(productDAO);
@@ -82,6 +95,7 @@ public class POSController {
             calculateChange();
         });        
     }
+
     
 
     private void initializeProductTab(ProductDAO productDAO) {
@@ -134,6 +148,42 @@ public class POSController {
         alert.showAndWait();
     }
 
+    private void setupActionColumn() {
+    actionColumn.setCellFactory(col -> new TableCell<>() {
+        private final Button editButton = new Button("Edit");
+        private final Button deleteButton = new Button("Delete");
+        private final HBox hbox = new HBox(5, editButton, deleteButton);
+
+        {
+            hbox.setAlignment(Pos.CENTER);
+            editButton.setStyle("-fx-background-color: #2196F3; -fx-text-fill: white;");
+            deleteButton.setStyle("-fx-background-color: #F44336; -fx-text-fill: white;");
+
+            editButton.setOnAction(e -> {
+                CartItem item = getTableView().getItems().get(getIndex());
+                quantitySpinner.getValueFactory().setValue(item.getQuantity());
+                editingItem = item;
+                addToCartButton.setText("Update Item");
+                addToCartButton.setDisable(false); // ✅ ENABLE it here
+            });
+            
+            
+            deleteButton.setOnAction(e -> {
+                CartItem item = getTableView().getItems().get(getIndex());
+                cartItems.remove(item);
+                updateTotals(); // ✅ recalculate after deletion
+            });            
+        }
+
+        @Override
+        protected void updateItem(Void item, boolean empty) {
+            super.updateItem(item, empty);
+            setGraphic(empty ? null : hbox);
+        }
+    });
+}
+
+
     private void generateNewTransaction() {
         String transactionId = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -145,31 +195,35 @@ public class POSController {
     @FXML
     private void handleSearchProduct() {
         String productCode = productCodeField.getText().trim();
+    
         if (productCode.isEmpty()) {
             AlertUtils.showError("Error", "Please enter a product code");
             return;
         }
-
+    
         Product product = findProductByCode(productCode);
+    
         if (product != null) {
-            currentProduct = product; // ✅ Save the reference here
-        
+            currentProduct = product; // ✅ Save selected product
+    
             productCodeLabel.setText(product.getCode());
             productNameLabel.setText(product.getName());
             productPriceLabel.setText(String.format("%,.2f", product.getPrice()));
             productStockLabel.setText(String.valueOf(product.getStock()));
+    
+            // Enable Add to Cart now that product is valid
             addToCartButton.setDisable(false);
-        
+    
+            // Setup quantity spinner with max = stock
             SpinnerValueFactory.IntegerSpinnerValueFactory valueFactory =
-                (SpinnerValueFactory.IntegerSpinnerValueFactory) quantitySpinner.getValueFactory();
-            valueFactory.setMax(product.getStock());
-            valueFactory.setValue(1);
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, product.getStock(), 1);
+            quantitySpinner.setValueFactory(valueFactory);
         } else {
             AlertUtils.showError("Not Found", "Product not found with code: " + productCode);
-            resetProductDetails();
+            resetProductDetails(); // Will also disable the button
         }
-        
     }
+
 
     private Product findProductByCode(String code) {
         String query = "SELECT * FROM products WHERE code = ?";
@@ -202,6 +256,21 @@ public class POSController {
 
     @FXML
     private void handleAddToCart() {
+        int quantity = quantitySpinner.getValue();
+    
+        if (editingItem != null) {
+            // Edit mode: update the quantity directly
+            editingItem.setQuantity(quantity);
+            cartTableView.refresh();
+            updateTotals();
+            editingItem = null; // Exit edit mode
+            addToCartButton.setText("Add to Cart");
+            productCodeField.clear();
+            resetProductDetails();
+            return;
+        }
+    
+        // Normal add-to-cart mode
         if (currentProduct == null) {
             AlertUtils.showError("No Product", "Please search and select a product first.");
             return;
@@ -209,9 +278,8 @@ public class POSController {
     
         String code = currentProduct.getCode();
         String name = currentProduct.getName();
-        double price = currentProduct.getPrice(); // ✅ Reliable source
-        int quantity = quantitySpinner.getValue();
-    
+        double price = currentProduct.getPrice();
+        
         for (CartItem item : cartItems) {
             if (item.getProductCode().equals(code)) {
                 item.setQuantity(item.getQuantity() + quantity);
@@ -227,8 +295,7 @@ public class POSController {
     
         productCodeField.clear();
         resetProductDetails();
-    }
-    
+    }    
 
     private void updateTotals() {
         subtotal = cartItems.stream().mapToDouble(CartItem::getSubtotal).sum();

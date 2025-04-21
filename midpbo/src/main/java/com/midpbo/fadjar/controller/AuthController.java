@@ -5,6 +5,7 @@ import com.midpbo.fadjar.MainApp;
 import com.midpbo.fadjar.model.User;
 import com.midpbo.fadjar.service.UserService;
 import com.midpbo.fadjar.util.SecurityUtils;
+import com.midpbo.fadjar.controller.LogTabController;
 
 import javafx.fxml.FXML;
 import javafx.scene.chart.PieChart.Data;
@@ -75,6 +76,8 @@ public class AuthController {
         User user = UserService.authenticate(username, password);
         if (user != null) {
             showSuccess("Login successful! Welcome, " + user.getFullName());
+            System.out.println("Authenticated as " + user.getUsername());
+            addLog(user.getUsername(), "Logged in");
             try {
                 MainApp.showPOSView();
             } catch (Exception e) {
@@ -112,6 +115,7 @@ public class AuthController {
         }
         
         if (UserService.registerUser(username, name, password)) {
+                addLog(username, "Signed up");
                 showSuccess("Account created successfully!");
 
             try {
@@ -160,6 +164,19 @@ public class AuthController {
         }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void addLog(String username, String action) {
+        try (Connection conn = Database_conn.connect();
+             PreparedStatement stmt = conn.prepareStatement(
+                 "INSERT INTO logs (username, action, timestamp) VALUES (?, ?, datetime('now'))"
+             )) {
+            stmt.setString(1, username);
+            stmt.setString(2, action);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("Failed to insert log: " + e.getMessage());
         }
     }
 }

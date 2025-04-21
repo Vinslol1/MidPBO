@@ -47,3 +47,10 @@ CREATE TABLE IF NOT EXISTS transaction_items (
     price_per_unit REAL,
     FOREIGN KEY(transaction_id) REFERENCES transactions(id)
 );
+
+CREATE TABLE IF NOT EXISTS logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    action TEXT NOT NULL,
+    timestamp TIMESTAMP DEFAULT (datetime('now','localtime'))
+);

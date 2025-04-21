@@ -6,11 +6,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.midpbo.fadjar.Database_conn;
 
 public class LogTabController {
 
@@ -27,8 +33,12 @@ public class LogTabController {
     private final ObservableList<LogEntry> logs = FXCollections.observableArrayList();
     private final ObservableList<String> users = FXCollections.observableArrayList();
 
+
+    
     @FXML
     public void initialize() {
+        addLog("SYSTEM", "System initialized");
+        loadLogsFromDatabase();
         // Setup columns
         userCol.setCellValueFactory(new PropertyValueFactory<>("username"));
         actionCol.setCellValueFactory(new PropertyValueFactory<>("action"));
@@ -47,8 +57,6 @@ public class LogTabController {
             }
         });
 
-        // Sample data
-        initializeSampleData();
 
         // Setup user filter
         userFilter.getItems().add("All Users");
@@ -88,19 +96,37 @@ public class LogTabController {
         logTable.setItems(filtered);
     }
 
-    private void initializeSampleData() {
-        addLog("SYSTEM", "System initialized");
-        addLog("admin", "Logged in");
-        addLog("admin", "Added new product");
-        addLog("staff", "Processed transaction");
-    }
 
-    public void addLog(String username, String action) {
-        logs.add(new LogEntry(username, action, LocalDateTime.now()));
-        if (!users.contains(username)) {
-            users.add(username);
-        }
+public void addLog(String username, String action) {
+    logs.add(new LogEntry(username, action, LocalDateTime.now())); // UI side
+
+    try (Connection conn = Database_conn.connect()) {
+        String sql = "INSERT INTO logs (username, action) VALUES (?, ?)";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setString(1, username);
+        stmt.setString(2, action);
+        stmt.executeUpdate();
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+}
+
+public void loadLogsFromDatabase() {
+    try (Connection conn = Database_conn.connect()) {
+        String sql = "SELECT username, action, timestamp FROM logs ORDER BY timestamp DESC";
+        ResultSet rs = conn.createStatement().executeQuery(sql);
+        while (rs.next()) {
+            logs.add(new LogEntry(
+                rs.getString("username"),
+                rs.getString("action"),
+                rs.getTimestamp("timestamp").toLocalDateTime()
+            ));
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+
 
     public static class LogEntry {
         private final String username;

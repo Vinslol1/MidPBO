@@ -16,7 +16,7 @@
 <HBox spacing="10">
     <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
     <DatePicker fx:id="endDatePicker" promptText="End Date"/>
-    <Button text="Generate Log" onAction="#handleGenerateLog"/>
+    <Button text="Generate Log"/>
 </HBox>
 <TableView fx:id="LogTableView" style="-fx-pref-height: 300;">
     <columns>

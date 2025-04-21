@@ -8,7 +8,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="" spacing="10">
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.midpbo.fadjar.controller.TransactionTabController" spacing="10">
     <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
     
     <Label text="Transaction History" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>

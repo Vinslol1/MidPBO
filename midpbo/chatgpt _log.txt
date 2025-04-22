@@ -20,4 +20,92 @@ Steven Girsang:
 (6) the collon is underlined red (Syntax error on token )
 
 (7) Unreachable catch block for SQLException. This exception is never thrown from the try statement bodyJava(83886247)
-    
+
+https://chatgpt.com/share/680776f4-e8c4-800a-a146-ae599821730a
+
+contoh error yang code dibantu dengan gpt:
+
+The constructor Product(int, String, String, double) is undefinedJava(134217858)
+incompatible types: int cannot be converted to String(errors(1): 8:9-8:79)
+double price - com.midpbo.fadjar.model.DigitalProduct.DigitalProduct(int, String, String, double, String, String)
+double price
+
+Caused by: java.lang.IllegalArgumentException: Can not set javafx.scene.control.TextField field com.midpbo.fadjar.controller.ProductTabController.descriptionField to javafx.scene.control.TextArea
+
+Database initialized successfully
+Fetching products...
+Found product: p002
+Error parsing date '1745946000000': Text '1745946000000' could not be parsed at index 0
+Table refreshed. Total items: 8
+Apr 22, 2025 12:31:12 PM javafx.scene.control.cell.PropertyValueFactory getCellDataReflectively
+WARNING: Can not retrieve property 'expiredDate' in PropertyValueFactory: javafx.scene.control.cell.PropertyValueFactory@34b9f5cb with provided class type: class com.midpbo.fadjar.model.Product
+java.lang.IllegalStateException: Cannot read from unreadable property expiredDate
+
+typeComboBox cannot be resolvedJava(570425394)
+cannot find symbol
+  symbol:   variable typeComboBox
+  location: class ProductTabController(errors(1): 37:9-37:21)
+
+javafx.graphics@21/com.sun.glass.ui.win.WinApplication.lambda$runLoop$3(WinApplication.java:185)
+        at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.lang.UnsupportedOperationException: Cannot determine type for property.
+        at javafx.fxml@21/com.sun.javafx.fxml.BeanAdapter.getSetterMethod(BeanAdapter.java:178)
+        at javafx.fxml@21/com.sun.javafx.fxml.BeanAdapter.isReadOnly(BeanAdapter.java:306)
+
+cannot find symbol
+  symbol:   class TableCell
+  location: class POSController(errors(2): 97:54-97:63)
+TableCell cannot be resolved to a typeJava(16777218)
+
+exception SQLException is never thrown in body of corresponding try statement(errors(3): 85:9-85:35)
+Unreachable catch block for SQLException. This exception is never thrown from the try statement bodyJava(83886247)
+java.​sql
+
+public class SQLException
+extends Exception
+implements Iterable<Throwable>
+An exception that provides information on a database access error or other errors.
+
+Each SQLException provides several kinds of information:
+
+a string describing the error. This is used as the Java Exception message, available via the method getMessage.
+
+The method getInstance() is undefined for the type MainAppJava(67108964)
+cannot find symbol
+  symbol:   method getInstance()
+  location: class MainApp(errors(1): 112:34-112:45)
+
+ncompatible types: String cannot be converted to MainApp(errors(1): 117:9-117:63)
+Cannot cast from String to MainAppJava(16777372)
+javafx.​application.​Application
+
+public static String getUserAgentStylesheet()
+String javafx.application.Application.getUserAgentStylesheet()
+
+ncompatible types: String cannot be converted to MainApp(errors(1): 117:9-117:63)
+Cannot cast from String to MainAppJava(16777372)
+javafx.​application.​Application
+
+public static String getUserAgentStylesheet()
+String javafx.application.Application.getUserAgentStylesheet()
+
+The constructor Product(int, String, String, double, int, String) is undefinedJava(134217858)
+no suitable constructor found for Product(int,String,String,double,int,String) constructor Product.Product(int,String,String,double,int) is not applicable (actual and formal argument lists differ in length) constructor Product.Product(String,String,double,int) is not applicable (actual and formal argument lists differ in length)(errors(1): 7:9-7:58)
+String name - com.midpbo.fadjar.model.DigitalProduct.DigitalProduct(int, String, String, double, int, String, String)
+String name
+
+public void updatePerishableProduct(PerishableProduct product) throws SQLException { String sql = "UPDATE perishable_products (code, name, price, stock, expired_date) VALUES (?, ?, ?, ?, ?)"; try (PreparedStatement pstmt = connection.prepareStatement(sql)) { pstmt.setString(1, product.getCode()); pstmt.setString(2, product.getName()); pstmt.setDouble(3, product.getPrice()); pstmt.setInt(4, product.getStock()); // Convert LocalDate to yyyy-MM-dd format if (product.getExpiredDate() != null) { String formattedDate = product.getExpiredDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")); pstmt.setString(5, formattedDate); } else { pstmt.setNull(5, java.sql.Types.VARCHAR); } pstmt.executeUpdate(); } } syntax missing in querysql
+
+WARNING: Can not retrieve property 'expiredDate' in PropertyValueFactory: javafx.scene.control.cell.PropertyValueFactory@6c345c75 with provided class type: class com.midpbo.fadjar.model.Product
+java.lang.IllegalStateException: Cannot read from unreadable property expiredDate
+        at javafx.base@21/com.sun.javafx.property.PropertyReference.get(PropertyReference.java:167)
+        at javafx.controls@21/javafx.scene.control.cell.PropertyValueFactory.getCellDataReflectively(PropertyValueFactory.java:183)
+        at javafx.controls@21/javafx.scene.control.cell.PropertyValueFactory.call(PropertyValueFactory.java:153)
+        at 
+
+Fetching products...
+Found product: p002
+Error parsing date '1745946000000': Text '1745946000000' could not be parsed at index 0
+Error parsing date '1745341200000': Text '1745341200000' could not be parsed at index 0
+Error parsing date '1745427600000': Text '1745427600000' could not be parsed at index 0
+Table refreshed. Total items: 10

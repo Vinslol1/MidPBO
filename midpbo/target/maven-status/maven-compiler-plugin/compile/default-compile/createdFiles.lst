@@ -5,6 +5,8 @@ com\midpbo\fadjar\controller\MainController.class
 com\midpbo\fadjar\controller\ProductTabController.class
 com\midpbo\fadjar\Entity\bundle_product.class
 com\midpbo\fadjar\model\TransactionRecord.class
+com\midpbo\fadjar\controller\LogTabController$1.class
+com\midpbo\fadjar\service\LogService.class
 com\midpbo\fadjar\controller\POSController.class
 com\midpbo\fadjar\Entity\digital_product.class
 com\midpbo\fadjar\model\PerishableProduct.class
@@ -19,6 +21,8 @@ com\midpbo\fadjar\util\AlertUtils.class
 com\midpbo\fadjar\controller\LogTabController.class
 com\midpbo\fadjar\Database_conn.class
 com\midpbo\fadjar\model\RefundTransaction.class
+com\midpbo\fadjar\model\DigitalProduct.class
+com\midpbo\fadjar\controller\LogTabController$LogEntry.class
 com\midpbo\fadjar\model\CartItem.class
 com\midpbo\fadjar\Entity\non_perishable_product.class
 com\midpbo\fadjar\model\Payable.class

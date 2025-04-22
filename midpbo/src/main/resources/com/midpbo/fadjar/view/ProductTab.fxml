@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import java.lang.String?>
 
 <VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.midpbo.fadjar.controller.ProductTabController" spacing="10">
     <padding><Insets top="10" right="10" bottom="10" left="10"/></padding>
@@ -16,14 +17,26 @@
     <TableView fx:id="productTable">
         <columns>
             <TableColumn text="ID" fx:id="idColumn" prefWidth="50"/>
-            <TableColumn text="Code" fx:id="codeColumn" prefWidth="100"/>
-            <TableColumn text="Name" fx:id="nameColumn" prefWidth="200"/>
-            <TableColumn text="Price" fx:id="priceColumn" prefWidth="100"/>
-            <TableColumn text="Stock" fx:id="stockColumn" prefWidth="100"/>
+            <TableColumn text="Code" fx:id="codeColumn" prefWidth="80"/>
+            <TableColumn text="Name" fx:id="nameColumn" prefWidth="150"/>
+            <TableColumn text="Description" fx:id="descriptionColumn" prefWidth="150"/>
+            <TableColumn text="Price" fx:id="priceColumn" prefWidth="80"/>
+            <TableColumn text="Stock" fx:id="stockColumn" prefWidth="60"/>
+            <TableColumn text="Expiry Date" fx:id="expiryDateColumn" prefWidth="100"/>
+            <TableColumn text="URL" fx:id="URLColumn" prefWidth="100"/>
+
         </columns>
     </TableView>
     
     <GridPane hgap="10" vgap="10">
+        <columnConstraints>
+            <ColumnConstraints minWidth="100" prefWidth="100" />
+            <ColumnConstraints minWidth="200" prefWidth="200" />
+            <ColumnConstraints minWidth="100" prefWidth="100" />
+            <ColumnConstraints minWidth="200" prefWidth="200" />
+        </columnConstraints>
+        
+        <!-- Basic product information -->
         <Label text="Code:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
         <TextField fx:id="codeField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
         
@@ -36,7 +49,39 @@
         <Label text="Stock:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
         <TextField fx:id="stockField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
         
-        <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="4">
+        <Label text="Type:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
+        <ComboBox fx:id="typeComboBox" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        
+        <Label text="Description:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <TextField fx:id="descriptionField" GridPane.columnIndex="1" GridPane.rowIndex="5" prefHeight="60.0"/>
+        
+        <!-- Type-specific fields -->
+        <VBox fx:id="perishableFields" visible="false" managed="false" spacing="10" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.rowSpan="3">
+            <Label text="Perishable Product" style="-fx-font-weight: bold;"/>
+            <Label text="Expiry Date:"/>
+            <DatePicker fx:id="expiryDatePicker"/>
+        </VBox>
+        
+        <VBox fx:id="digitalFields" visible="false" managed="false" spacing="10" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.rowSpan="3">
+            <Label text="Digital Product" style="-fx-font-weight: bold;"/>
+            <Label text="Download URL:"/>
+            <TextField fx:id="urlField"/>
+        </VBox>
+        
+        <VBox fx:id="bundleFields" visible="false" managed="false" spacing="10" GridPane.columnIndex="2" GridPane.rowIndex="0" GridPane.rowSpan="4">
+            <Label text="Bundle Product" style="-fx-font-weight: bold;"/>
+            <Label text="Discount (%):"/>
+            <TextField fx:id="discountField"/>
+            <Label text="Bundle Items:"/>
+            <ListView fx:id="bundleItemsList" prefHeight="100"/>
+            <HBox spacing="5">
+                <Button text="Add Item"/>
+                <Button text="Remove Item"/>
+            </HBox>
+        </VBox>
+        
+        <!-- Action buttons -->
+        <HBox spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="6" GridPane.columnSpan="2">
             <Button text="Add" onAction="#handleAddProduct" style="-fx-base: #4CAF50;"/>
             <Button text="Update" onAction="#handleUpdateProduct" style="-fx-base: #2196F3;"/>
             <Button text="Delete" onAction="#handleDeleteProduct" style="-fx-base: #F44336;"/>

@@ -37,7 +37,7 @@ public class LogTabController {
     
     @FXML
     public void initialize() {
-        addLog("SYSTEM", "System initialized");
+        // addLog("SYSTEM", "System initialized");
         loadLogsFromDatabase();
         // Setup columns
         userCol.setCellValueFactory(new PropertyValueFactory<>("username"));
@@ -113,7 +113,7 @@ public void addLog(String username, String action) {
 
 public void loadLogsFromDatabase() {
     try (Connection conn = Database_conn.connect()) {
-        String sql = "SELECT username, action, timestamp FROM logs ORDER BY timestamp DESC";
+        String sql = "SELECT username, action, timestamp FROM logs ORDER BY timestamp ASC";
         ResultSet rs = conn.createStatement().executeQuery(sql);
         while (rs.next()) {
             logs.add(new LogEntry(

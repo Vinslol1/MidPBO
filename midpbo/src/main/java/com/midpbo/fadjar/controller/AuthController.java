@@ -78,6 +78,7 @@ public class AuthController {
             showSuccess("Login successful! Welcome, " + user.getFullName());
             System.out.println("Authenticated as " + user.getUsername());
             addLog(user.getUsername(), "Logged in");
+            MainApp.currentUser = user.getUsername();
             try {
                 MainApp.showPOSView();
             } catch (Exception e) {
@@ -170,7 +171,7 @@ public class AuthController {
     private void addLog(String username, String action) {
         try (Connection conn = Database_conn.connect();
              PreparedStatement stmt = conn.prepareStatement(
-                 "INSERT INTO logs (username, action, timestamp) VALUES (?, ?, datetime('now'))"
+                 "INSERT INTO logs (username, action) VALUES (?, ?)"
              )) {
             stmt.setString(1, username);
             stmt.setString(2, action);

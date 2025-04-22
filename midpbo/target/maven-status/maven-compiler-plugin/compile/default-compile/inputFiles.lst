@@ -11,6 +11,7 @@ D:\Kuliah Docs\Semester 4\UTS(VSC)\MidPBO\midpbo\src\main\java\com\midpbo\fadjar
 D:\Kuliah Docs\Semester 4\UTS(VSC)\MidPBO\midpbo\src\main\java\com\midpbo\fadjar\util\AlertUtils.java
 D:\Kuliah Docs\Semester 4\UTS(VSC)\MidPBO\midpbo\src\main\java\com\midpbo\fadjar\controller\AuthController.java
 D:\Kuliah Docs\Semester 4\UTS(VSC)\MidPBO\midpbo\src\main\java\com\midpbo\fadjar\controller\TransactionTabController.java
+D:\Kuliah Docs\Semester 4\UTS(VSC)\MidPBO\midpbo\src\main\java\com\midpbo\fadjar\service\LogService.java
 D:\Kuliah Docs\Semester 4\UTS(VSC)\MidPBO\midpbo\src\main\java\com\midpbo\fadjar\controller\ProductTabController.java
 D:\Kuliah Docs\Semester 4\UTS(VSC)\MidPBO\midpbo\src\main\java\com\midpbo\fadjar\DAO\ProductDAO.java
 D:\Kuliah Docs\Semester 4\UTS(VSC)\MidPBO\midpbo\src\main\java\com\midpbo\fadjar\model\TransactionRecord.java

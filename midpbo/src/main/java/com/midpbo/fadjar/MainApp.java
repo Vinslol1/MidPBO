@@ -3,6 +3,7 @@ package com.midpbo.fadjar;
 import com.midpbo.fadjar.controller.POSController;
 import com.midpbo.fadjar.controller.ProductTabController;
 import com.midpbo.fadjar.DAO.ProductDAO;
+import com.midpbo.fadjar.service.LogService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,6 +24,7 @@ public class MainApp extends Application {
     private static Stage primaryStage;
     private Connection connection;
     private ProductDAO productDAO;
+    public static String currentUser;
 
 
 
@@ -32,11 +34,17 @@ public class MainApp extends Application {
         primaryStage = stage;
         
         // Initialize database
+        LogService.addLog("SYSTEM", "System initialized");
         String sqlFilePath = "../midpbo/QUERY.sql";
         Database_conn.runSQLFile(sqlFilePath);
         initDatabase();
         
         showLoginView();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            if (currentUser != null && !currentUser.isEmpty()) {
+                LogService.addLog(currentUser, "Disconnected / Application closed");
+            }
+        }));
     }
 
     // Proper singleton access method

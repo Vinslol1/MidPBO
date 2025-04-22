@@ -12,7 +12,7 @@ import com.midpbo.fadjar.MainApp;
 import com.midpbo.fadjar.model.*;
 import com.midpbo.fadjar.util.AlertUtils;
 import com.midpbo.fadjar.util.TransactionStore;
-
+import com.midpbo.fadjar.service.LogService;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -27,6 +27,11 @@ import javafx.scene.layout.HBox;
 public class POSController {
     private ProductDAO productDAO;
     private Connection conn;
+    private LogTabController logTabController;
+    public void setLogTabController(LogTabController logTabController) {
+        this.logTabController = logTabController;
+    }
+
 
     // UI elements
     @FXML private TextField productCodeField;
@@ -130,6 +135,10 @@ public class POSController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/midpbo/fadjar/view/LogTab.fxml"));
             Parent logTabContent = loader.load();
+
+            //refrence
+            this.logTabController = loader.getController();
+            System.out.println("logTabController connected: " + logTabController);
 
             Tab logTab = new Tab("Log Report", logTabContent);
             logTab.setClosable(false);
@@ -285,12 +294,17 @@ public class POSController {
                 item.setQuantity(item.getQuantity() + quantity);
                 cartTableView.refresh();
                 updateTotals();
+                 // Log here
+                LogService.addLog(MainApp.currentUser, "Updated quantity: " + name + " x" + item.getQuantity());
+                logTabController.loadLogsFromDatabase();
                 return;
             }
         }
     
         CartItem newItem = new CartItem(code, name, price, quantity);
         cartItems.add(newItem);
+        LogService.addLog(MainApp.currentUser,"Added to cart: " + name + " x" + quantity);
+        logTabController.loadLogsFromDatabase();
         updateTotals();
     
         productCodeField.clear();
@@ -378,7 +392,12 @@ public class POSController {
             } else {
                 transaction = new RefundTransaction(transactionId, now, cartItems);
             }
-    
+
+            LogService.addLog(MainApp.currentUser,"Transaction processed: " + transactionType + 
+                        " | ID: " + transactionId + 
+                        " | Total: " + total + 
+                        " | Items: " + cartItems.size());
+            logTabController.loadLogsFromDatabase();
             transaction.processTransaction();
             transaction.serializeTransaction();
     
@@ -409,5 +428,12 @@ public class POSController {
         resetProductDetails();
         generateNewTransaction();
         statusLabel.setText("New transaction started");
+        LogService.addLog(MainApp.currentUser, "Performed a new transaction");
+        if (logTabController != null) {
+            System.out.println("Refreshing logs...");
+            logTabController.loadLogsFromDatabase(); // Ini harus jalan
+        } else {
+            System.out.println("logTabController is NULL!!"); // DEBUG: cek ini
+        }
     }
 }

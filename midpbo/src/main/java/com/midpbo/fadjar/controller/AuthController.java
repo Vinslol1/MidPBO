@@ -5,7 +5,6 @@ import com.midpbo.fadjar.MainApp;
 import com.midpbo.fadjar.model.User;
 import com.midpbo.fadjar.service.UserService;
 import com.midpbo.fadjar.util.SecurityUtils;
-import com.midpbo.fadjar.controller.LogTabController;
 
 import javafx.fxml.FXML;
 import javafx.scene.chart.PieChart.Data;

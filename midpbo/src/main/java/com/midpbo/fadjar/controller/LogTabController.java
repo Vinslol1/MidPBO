@@ -77,6 +77,34 @@ public class LogTabController {
         });
     }
 
+    public void refreshLogs() {
+        logs.clear();
+        logs.addAll(getAllLogsFromDatabase()); // metode ini ambil dari DB
+        logTable.setItems(logs); // update tampilan tabel
+    }
+    
+    private List<LogEntry> getAllLogsFromDatabase() {
+        List<LogEntry> result = FXCollections.observableArrayList();
+        String query = "SELECT user, actionFROM logs ORDER BY timestamp ASC";
+    
+        try (Connection conn = Database_conn.connect();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+    
+            while (rs.next()) {
+                logs.add(new LogEntry(
+                    rs.getString("username"),
+                    rs.getString("action"),
+                    rs.getTimestamp("timestamp").toLocalDateTime()
+                    ));
+                }
+            } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    
+        return result;
+    }
+    
     private void filterLogs() {
         String selectedUser = userFilter.getValue();
         LocalDate date = dateFilter.getValue();
@@ -97,21 +125,22 @@ public class LogTabController {
     }
 
 
-public void addLog(String username, String action) {
-    logs.add(new LogEntry(username, action, LocalDateTime.now())); // UI side
+    public void addLog(String username, String action) {
+        logs.add(new LogEntry(username, action, LocalDateTime.now())); // UI side
 
-    try (Connection conn = Database_conn.connect()) {
-        String sql = "INSERT INTO logs (username, action) VALUES (?, ?)";
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        stmt.setString(1, username);
-        stmt.setString(2, action);
-        stmt.executeUpdate();
-    } catch (SQLException e) {
+        try (Connection conn = Database_conn.connect()) {
+            String sql = "INSERT INTO logs (username, action) VALUES (?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setString(1, username);
+            stmt.setString(2, action);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
         e.printStackTrace();
+        }
     }
-}
 
-public void loadLogsFromDatabase() {
+    public void loadLogsFromDatabase() {
+    logs.clear();
     try (Connection conn = Database_conn.connect()) {
         String sql = "SELECT username, action, timestamp FROM logs ORDER BY timestamp ASC";
         ResultSet rs = conn.createStatement().executeQuery(sql);
@@ -125,7 +154,8 @@ public void loadLogsFromDatabase() {
     } catch (SQLException e) {
         e.printStackTrace();
     }
-}
+    logTable.setItems(logs);
+    }
 
 
     public static class LogEntry {

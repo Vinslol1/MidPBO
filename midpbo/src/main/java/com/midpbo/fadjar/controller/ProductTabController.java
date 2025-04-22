@@ -1,14 +1,16 @@
 package com.midpbo.fadjar.controller;
 
 import com.midpbo.fadjar.model.Product;
-
+import com.midpbo.fadjar.service.LogService;
 import java.util.ArrayList;
-import java.time.LocalDate;  
+import java.time.LocalDate;
 
+import com.midpbo.fadjar.MainApp;
 import com.midpbo.fadjar.DAO.ProductDAO;
 import com.midpbo.fadjar.model.PerishableProduct;
 import com.midpbo.fadjar.model.DigitalProduct;
 import com.midpbo.fadjar.model.BundleProduct;
+
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -64,6 +66,11 @@ public class ProductTabController {
     private final ObservableList<Product> productData = FXCollections.observableArrayList();
     private ProductDAO productDAO;
 
+    private LogTabController logTabController;
+    public void setLogTabController(LogTabController logTabController) {
+        this.logTabController = logTabController;
+    }
+
     @FXML
     public void initialize() {
         // Initialize product type combobox
@@ -72,6 +79,7 @@ public class ProductTabController {
         );
         typeComboBox.setItems(productTypes);
         typeComboBox.setValue("Regular"); // Set default value
+        
         
         // Add listener to show/hide type-specific fields
         typeComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
@@ -210,6 +218,7 @@ public class ProductTabController {
                     );
                     
                     productDAO.addProduct(product);
+                    LogService.addLog(MainApp.currentUser,"Added Regular Product: " + product.getName());  
                 } 
                 else if (productType.equals("Perishable")) {
                     PerishableProduct product = new PerishableProduct(
@@ -222,6 +231,9 @@ public class ProductTabController {
                     );
                     
                     productDAO.addPerishableProduct(product);
+                    LogService.addLog(MainApp.currentUser,"Added Perishable Product: " + product.getName() +
+                                        " (Exp: " + product.getExpiredDate() + ")");
+                    
                 }
                 else if (productType.equals("Digital")) {
                     DigitalProduct product = new DigitalProduct(
@@ -234,6 +246,8 @@ public class ProductTabController {
                     );
                     
                     productDAO.addDigitalProduct(product);
+                    LogService.addLog(MainApp.currentUser,"Added Digital Product: " + product.getName());
+                
                 }
                 else if (productType.equals("Bundle")) {
                     BundleProduct bundle = new BundleProduct(
@@ -247,6 +261,8 @@ public class ProductTabController {
                     bundle.setItems(FXCollections.observableArrayList());
                     
                     productDAO.addBundleProduct(bundle);
+                    LogService.addLog(MainApp.currentUser,"Added Bundle Product: " + bundle.getBundleName());
+                    
                 }
                 
                 refreshTable();
@@ -272,6 +288,8 @@ public class ProductTabController {
                     product.setStock(Integer.parseInt(stockField.getText()));
                     
                     productDAO.updateProduct(product);
+                    LogService.addLog(MainApp.currentUser,"Updated Regular Product: " + product.getName());
+
                 }
                 else if (productType.equals("Perishable")) {
                     PerishableProduct product = (PerishableProduct) selectedProduct;
@@ -280,8 +298,9 @@ public class ProductTabController {
                     product.setPrice(Double.parseDouble(priceField.getText()));
                     product.setStock(Integer.parseInt(stockField.getText()));
                     product.setExpiredDate(expiryDatePicker.getValue());
-                    
+                    LogService.addLog(MainApp.currentUser,"Updated Perishable Product: " + product.getName());
                     productDAO.updatePerishableProduct(product);
+
                 }
                 else if (productType.equals("Digital")) {
                     DigitalProduct product = (DigitalProduct) selectedProduct;
@@ -290,8 +309,10 @@ public class ProductTabController {
                     product.setPrice(Double.parseDouble(priceField.getText()));
                     product.setStock(Integer.parseInt(stockField.getText()));
                     product.setUrl(urlField.getText());
-                    
+                    LogService.addLog(MainApp.currentUser,"Updated Digital Product: " + product.getName());
                     productDAO.updateDigitalProduct(product);
+
+
                 }
                 else if (productType.equals("Bundle")) {
                     BundleProduct bundle = (BundleProduct) selectedProduct;
@@ -302,6 +323,7 @@ public class ProductTabController {
                     bundle.setItems(FXCollections.observableArrayList());
                     
                     productDAO.updateBundleProduct(bundle);
+                    LogService.addLog(MainApp.currentUser,"Updated Bundle Product: " + bundle.getBundleName());
                 }
                 
                 refreshTable();
@@ -330,7 +352,8 @@ public class ProductTabController {
                 else if (productType.equals("Bundle")) {
                     productDAO.deleteBundleProduct(((BundleProduct) selectedProduct).getId());
                 }
-                
+                LogService.addLog(MainApp.currentUser,"Deleted " + productType + " Product: ");
+                logTabController.loadLogsFromDatabase();
                 refreshTable();
                 clearFields();
             } catch (Exception e) {
